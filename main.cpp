@@ -11,7 +11,7 @@ const float POWER_UP_SPAWN_INTERVAL{10.0f};
 Vector2* generateRandomPositon(Rectangle rectangle) {   
     random_device rd;
     mt19937 gen(rd());
-
+    //hi github
     uniform_real_distribution<float> distrX(0, window_width);
     uniform_real_distribution<float> distrY(0, window_height);   
       
