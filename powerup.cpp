@@ -1,17 +1,23 @@
 #include <powerup.h>
 
 PowerUp::PowerUp(
-    Vector2 pos,
     PowerUpType t,
     Rectangle s
-) : position{pos}, type{t}, sprite{s} {
-    position.x -= s.width / 2;
-    position.y -= s.height / 2;
-    s.x = pos.x;
-    s.y = pos.y;
+) : type{t}, sprite{s} {
+    position.x = s.x;
+    position.y = s.y;
+    center = Vector2{position.x + (sprite.width / 2.0f), position.y + (sprite.height / 2.0f)};
 }
 
 
 void PowerUp::drawSprite(){
-    DrawRectangle(position.x, position.y, sprite.width, sprite.height, RED);
+    DrawRectanglePro(sprite, center, rotation, RED);
+    std::cout << "Sprite: x: " << sprite.x << " y: " << sprite.y << std::endl;
+    std::cout << "Position: x: " << position.x << " y: " << position.y << std::endl;
+}
+
+void PowerUp::rotate(float rot) {
+    if (rotation > 360.0f)
+        rotation -= (360.0f);
+    rotation += rot;
 }

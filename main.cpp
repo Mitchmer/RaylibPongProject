@@ -6,9 +6,9 @@ using namespace std;
 
 const float window_width{1280.0f};
 const float window_height{720.0f};
-const float POWER_UP_SPAWN_INTERVAL{10.0f};
+const float POWER_UP_SPAWN_INTERVAL{4.0f};
 
-Vector2* generateRandomPositon(Rectangle rectangle) {   
+Vector2 generateRandomPositon(Rectangle rectangle) {   
     random_device rd;
     mt19937 gen(rd());
     //hi github
@@ -28,7 +28,7 @@ Vector2* generateRandomPositon(Rectangle rectangle) {
         x = window_height - rectangle.height;
     }
     
-    Vector2* vector = new Vector2{x, y};
+    Vector2 vector{x, y};
     
     return vector;
 }
@@ -40,8 +40,10 @@ int main()
     SetTargetFPS(60);
 
     PowerUp currentPowerUp{};
-    Vector2* spritePostion;
+    Vector2 spritePostion;
     float timeLastSpawned = 0.0f;
+
+    float basicRotation = 0.0f;
 
     while (!WindowShouldClose())
     {
@@ -50,14 +52,16 @@ int main()
         
         // render
         BeginDrawing();
-        Rectangle basicPowerUpSprite{0, 0, 100.0f, 100.0f};
+        Rectangle basicPowerUpSprite{50.0f, 50.0f, 100.0f, 100.0f};
         
         if(currentTime - timeLastSpawned > POWER_UP_SPAWN_INTERVAL){
-            spritePostion = generateRandomPositon(basicPowerUpSprite);
-            currentPowerUp = PowerUp{*spritePostion, PowerUp::PowerUpType::SPEEDUP, basicPowerUpSprite};
-            delete spritePostion;
+            Vector2 randomPosition = generateRandomPositon(basicPowerUpSprite);
+            basicPowerUpSprite.x = randomPosition.x;
+            basicPowerUpSprite.y = randomPosition.y;
+            currentPowerUp = PowerUp{PowerUp::PowerUpType::SPEEDUP, basicPowerUpSprite};
             timeLastSpawned = currentTime;
         }
+        currentPowerUp.rotate();
         currentPowerUp.drawSprite();
         ClearBackground(BLACK);
 
