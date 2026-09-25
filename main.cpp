@@ -8,29 +8,27 @@ const float window_width{1280.0f};
 const float window_height{720.0f};
 const float POWER_UP_SPAWN_INTERVAL{4.0f};
 
-Vector2 generateRandomPositon(Rectangle rectangle) {   
+Vector2 generateRandomPositon(float boundaryX, float boundaryY) {   
     random_device rd;
-    mt19937 gen(rd());
-    //hi github
-    uniform_real_distribution<float> distrX(0, window_width);
-    uniform_real_distribution<float> distrY(0, window_height);   
-      
+    mt19937 gen(rd()); 
+
+    uniform_real_distribution<float> distrX(boundaryX, window_width - boundaryX);
+    uniform_real_distribution<float> distrY(boundaryY, window_height - boundaryY);   
+
     float x = distrX(gen);
     float y = distrY(gen);
-    if( x < rectangle.width) {
-        x = rectangle.width;
-    }else if(x > window_width - rectangle.width){
-        x = window_width - rectangle.width;
-    }
-    if( y < rectangle.height) {
-        y = rectangle.height;
-    }else if(y > window_height - rectangle.height){
-        x = window_height - rectangle.height;
-    }
-    
+
     Vector2 vector{x, y};
-    
     return vector;
+}
+
+float generateRandomFloat(float begin = 0.0f, float end = 100.0f) {   
+    random_device rd;
+    mt19937 gen(rd()); 
+
+    uniform_real_distribution<float> distrX(begin, end); 
+
+    return distrX(gen);
 }
 
 int main()
@@ -39,9 +37,10 @@ int main()
     InitWindow(window_width, window_height, "Simple Pong");
     SetTargetFPS(60);
 
-    PowerUp currentPowerUp{};
-    Vector2 spritePostion;
+    Rectangle basicPowerUpSprite{50.0f, 50.0f, 100.0f, 100.0f};
+    PowerUp currentPowerUp{PowerUp::PowerUpType::SPEEDUP, basicPowerUpSprite};
     float timeLastSpawned = 0.0f;
+    float rotationSpeed = 1.0f;
 
     float basicRotation = 0.0f;
 
@@ -52,16 +51,14 @@ int main()
         
         // render
         BeginDrawing();
-        Rectangle basicPowerUpSprite{50.0f, 50.0f, 100.0f, 100.0f};
         
         if(currentTime - timeLastSpawned > POWER_UP_SPAWN_INTERVAL){
-            Vector2 randomPosition = generateRandomPositon(basicPowerUpSprite);
-            basicPowerUpSprite.x = randomPosition.x;
-            basicPowerUpSprite.y = randomPosition.y;
-            currentPowerUp = PowerUp{PowerUp::PowerUpType::SPEEDUP, basicPowerUpSprite};
+            Vector2 randomPosition = generateRandomPositon(currentPowerUp.boundaryDistance, currentPowerUp.boundaryDistance);
+            currentPowerUp.setPosition(randomPosition);
             timeLastSpawned = currentTime;
+            rotationSpeed = generateRandomFloat(5.0f, 20.0f);
         }
-        currentPowerUp.rotate();
+        currentPowerUp.rotate(rotationSpeed);
         currentPowerUp.drawSprite();
         ClearBackground(BLACK);
 

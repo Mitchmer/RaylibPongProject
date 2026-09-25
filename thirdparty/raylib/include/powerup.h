@@ -24,6 +24,7 @@ private:
 public:
 
     Rectangle sprite{Rectangle{0.0f, 0.0f, 1.0f, 1.0f}};
+    float boundaryDistance = 1.0f;
     
     PowerUp(
         PowerUpType type = SPEEDUP, 
@@ -35,6 +36,16 @@ public:
 
     // TODO: update CENTER when changing position
     // -> make position a private member, access & mtuation through member functions
+    void setPositionX(float x);
+    void setPositionY(float y);
+    void setPosition(const Vector2&);
+
+    float getPositionX() const;
+    float getPositionY() const;
+    Vector2 getPosition() const;
+
+    float getWidth() const;
+    float getHeight() const;
 };
 
 
