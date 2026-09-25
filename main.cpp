@@ -1,6 +1,7 @@
 #include <raylib.h>
 #include <raymath.h>
 #include <powerup.h>
+#include <paddle.h>
 #include <random>
 using namespace std;
 
@@ -38,9 +39,12 @@ int main()
     SetTargetFPS(60);
 
     Rectangle basicPowerUpSprite{50.0f, 50.0f, 100.0f, 100.0f};
+    
     PowerUp currentPowerUp{PowerUp::PowerUpType::SPEEDUP, basicPowerUpSprite};
     float timeLastSpawned = 0.0f;
     float rotationSpeed = 1.0f;
+
+    Paddle player1Paddle{Rectangle{10.0f, 10.0f, 20.0f, 100.0f}};
 
     float basicRotation = 0.0f;
 
@@ -51,6 +55,7 @@ int main()
         
         // render
         BeginDrawing();
+        player1Paddle.drawPaddle();
         
         if(currentTime - timeLastSpawned > POWER_UP_SPAWN_INTERVAL){
             Vector2 randomPosition = generateRandomPositon(currentPowerUp.boundaryDistance, currentPowerUp.boundaryDistance);
