@@ -119,7 +119,8 @@ else()
     message(FATAL_ERROR "This template currently supports Windows, macOS, and Linux only.")
 endif()
 
-add_executable(PongTest1 "main.cpp" "powerup.cpp" "paddle.cpp")
+add_executable(PongTest1 "main.cpp" "powerup.cpp" "paddle.cpp"
+    ball.cpp)
 
 target_link_libraries(PongTest1 PRIVATE raylib)
 

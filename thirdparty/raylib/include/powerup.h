@@ -34,8 +34,6 @@ public:
     void drawSprite();
     void rotate(float rotation = 1.0f);
 
-    // TODO: update CENTER when changing position
-    // -> make position a private member, access & mtuation through member functions
     void setPositionX(float x);
     void setPositionY(float y);
     void setPosition(const Vector2&);

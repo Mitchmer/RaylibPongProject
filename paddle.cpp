@@ -11,9 +11,9 @@ void Paddle::drawPaddle() const {
     DrawRectangle(position.x, position.y, sprite.width, sprite.height, WHITE);
 }
 
-void Paddle::move(Vector2 vec) {
-    position.x += vec.x * speedMultX;
-    position.y += vec.y * speedMultY;
+void Paddle::move(Vector2 direction) {
+    position.x += direction.x * speedMultX;
+    position.y += direction.y * speedMultY;
 
     sprite.x = position.x;
     sprite.y = position.y;
