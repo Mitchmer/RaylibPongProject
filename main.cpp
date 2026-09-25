@@ -8,12 +8,13 @@ using namespace std;
 const float window_width{1280.0f};
 const float window_height{720.0f};
 const float POWER_UP_SPAWN_INTERVAL{4.0f};
+const float GAME_MARGINS{20.0f};
 
-Vector2 generateRandomPositon(float boundaryX, float boundaryY) {   
+Vector2 generateRandomPositon(float boundaryLeftX, float boundaryRightX, float boundaryY) {   
     random_device rd;
     mt19937 gen(rd()); 
 
-    uniform_real_distribution<float> distrX(boundaryX, window_width - boundaryX);
+    uniform_real_distribution<float> distrX(boundaryLeftX, window_width - boundaryRightX);
     uniform_real_distribution<float> distrY(boundaryY, window_height - boundaryY);   
 
     float x = distrX(gen);
@@ -38,15 +39,19 @@ int main()
     InitWindow(window_width, window_height, "Simple Pong");
     SetTargetFPS(60);
 
-    Rectangle basicPowerUpSprite{50.0f, 50.0f, 100.0f, 100.0f};
+    Rectangle basicPowerUpSprite{window_width / 2.0f, window_height / 2.0f, 100.0f, 100.0f};
     
     PowerUp currentPowerUp{PowerUp::PowerUpType::SPEEDUP, basicPowerUpSprite};
     float timeLastSpawned = 0.0f;
     float rotationSpeed = 1.0f;
 
-    Paddle player1Paddle{Rectangle{10.0f, 10.0f, 20.0f, 100.0f}};
+    Paddle player1Paddle{Rectangle{GAME_MARGINS, GAME_MARGINS, 40.0f, 200.0f}};
+    player1Paddle.setSpeedMult({0.0f, 5.0f});
 
-    float basicRotation = 0.0f;
+    Paddle player2Paddle{Rectangle{GAME_MARGINS, GAME_MARGINS, 40.0f, 200.0f}};
+    player2Paddle.setPositionX(window_width - GAME_MARGINS - player2Paddle.getWidth());
+    player2Paddle.setSpeedMult({0.0f, 5.0f});
+    player2Paddle.configureControls(KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT);
 
     while (!WindowShouldClose())
     {
@@ -55,18 +60,62 @@ int main()
         
         // render
         BeginDrawing();
-        player1Paddle.drawPaddle();
-        
+
         if(currentTime - timeLastSpawned > POWER_UP_SPAWN_INTERVAL){
-            Vector2 randomPosition = generateRandomPositon(currentPowerUp.boundaryDistance, currentPowerUp.boundaryDistance);
+            Vector2 randomPosition = generateRandomPositon(
+                currentPowerUp.boundaryDistance + GAME_MARGINS + player1Paddle.getWidth(), 
+                currentPowerUp.boundaryDistance + GAME_MARGINS + player2Paddle.getWidth(),
+                currentPowerUp.boundaryDistance
+            );
             currentPowerUp.setPosition(randomPosition);
             timeLastSpawned = currentTime;
             rotationSpeed = generateRandomFloat(5.0f, 20.0f);
         }
         currentPowerUp.rotate(rotationSpeed);
         currentPowerUp.drawSprite();
-        ClearBackground(BLACK);
 
+        // player 1
+        float x = 0.0f;
+        float y = 0.0f;
+        Vector2 position = player1Paddle.getPosition();
+        if (IsKeyDown(player1Paddle.getUpKey())) {
+            // check if it's against the top of the screen
+            if (position.y > GAME_MARGINS)
+                y = -1.0f;
+            else 
+                player1Paddle.setPositionY(GAME_MARGINS);
+        } else if (IsKeyDown(player1Paddle.getDownKey())) {
+            // check if it's against the bottom of the screen
+            if ((position.y + player1Paddle.getHeight()) < (window_height - GAME_MARGINS))
+                y = 1.0f;
+            else 
+                player1Paddle.setPositionY(window_height - GAME_MARGINS - player1Paddle.getHeight());
+        }
+        player1Paddle.move({x, y});
+
+        // player 2
+        x = 0.0f;
+        y = 0.0f;
+        position = player2Paddle.getPosition();
+        if (IsKeyDown(player2Paddle.getUpKey())) {
+            // check if it's against the top of the screen
+            if (position.y > GAME_MARGINS)
+                y = -1.0f;
+            else 
+                player2Paddle.setPositionY(GAME_MARGINS);
+        } else if (IsKeyDown(player2Paddle.getDownKey())) {
+            // check if it's against the bottom of the screen
+            if ((position.y + player2Paddle.getHeight()) < (window_height - GAME_MARGINS))
+                y = 1.0f;
+            else
+                player2Paddle.setPositionY(window_height - GAME_MARGINS - player2Paddle.getHeight());
+        }
+        player2Paddle.move({x, y});
+        
+        player1Paddle.drawPaddle();
+        player2Paddle.drawPaddle();
+
+        ClearBackground(BLACK);
         EndDrawing();
     }
 
